@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Ingredient Detective - Smart Health Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --accent: #FF9800;
+            --danger: #F44336;
+            --warning: #FFC107;
+            --dark: #2E7D32;
+            --light: #F1F8E9;
+            --text: #212121;
+            --gray: #757575;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light) 0%, #E8F5E9 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        .logo {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            background: white;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .upload-section, .result-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .upload-area {
+            border: 3px dashed #BDBDBD;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            background: #f9f9f9;
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(76, 175, 80, 0.05);
+        }
+        .upload-area i {
+            font-size: 4rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+        .upload-area:hover i {
+            color: var(--primary);
+        }
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        .upload-btn:hover {
+            background: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+        #file-input {
+            display: none;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .analyze-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px auto 0;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+        }
+        .analyze-btn:hover {
+            background: #F57C00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .result-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--gray);
+            padding: 20px;
+        }
+        .result-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #E0E0E0;
+        }
+        .result-placeholder h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        .analysis-card {
+            display: none;
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .health-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+        .status-healthy { background: var(--primary); }
+        .status-caution { background: var(--warning); }
+        .status-harmful  { background: var(--danger); }
+
+        .status-text h3 { font-size: 1.6rem; margin-bottom: 5px; }
+        .status-text p  { color: var(--gray); font-size: 0.95rem; }
+
+        .analysis-section {
+            margin-bottom: 20px;
+        }
+        .analysis-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .analysis-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .ingredient-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .ingredient-list li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+        .ingredient-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .recommendation {
+            background: rgba(139, 195, 74, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(76, 175, 80, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            color: var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .main-content    { flex-direction: column; }
+            header h1        { font-size: 2.2rem; }
+            .section-title   { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-search"></i>
+            </div>
+            <h1>Food Ingredient Detective</h1>
+            <p>Upload an image of any food or drink product ingredients, and I'll analyze them for potential health impacts</p>
+        </header>
+
+        <div class="main-content">
+            <div class="upload-section">
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Upload Ingredients Image</h2>
+                
+                <div class="upload-area" id="upload-area">
+                    <i class="fas fa-file-image"></i>
+                    <p class="upload-text">Drag & drop your image here or click to browse</p>
+                    <button class="upload-btn"><i class="fas fa-folder-open"></i> Choose File</button>
+                    <input type="file" id="file-input" accept="image/*">
+                </div>
+                
+                <img id="image-preview" class="image-preview" alt="Preview">
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing ingredients. This may take 10-20 seconds</p>
+                </div>
+                
+                <div class="error-message" id="error-message"></div>
+                
+                <button class="analyze-btn" id="analyze-btn" disabled>
+                    <i class="fas fa-search"></i> Analyze Ingredients
+                </button>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title"><i class="fas fa-clipboard-list"></i> Health Analysis</h2>
+                
+                <div class="result-content">
+                    <div class="result-placeholder" id="result-placeholder">
+                        <i class="fas fa-microscope"></i>
+                        <h3>Your Analysis Will Appear Here</h3>
+                        <p>Upload an image of product ingredients to get a detailed health assessment</p>
+                    </div>
+                    
+                    <div class="analysis-card" id="analysis-result">
+                        <div class="health-status">
+                            <div class="status-icon" id="status-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="status-text">
+                                <h3 id="status-title">Generally Healthy</h3>
+                                <p id="status-description">This product contains mostly natural ingredients</p>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-check-circle"></i> Summary</h4>
+                            <p id="summary-text">This product appears to be a relatively healthy choice. It contains several natural ingredients and minimal artificial additives.</p>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-vial"></i> Key Ingredients Analysis</h4>
+                            <ul class="ingredient-list" id="ingredients-list">
+                                <!-- populated dynamically -->
+                            </ul>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Potential Concerns</h4>
+                            <p id="concerns-text"></p>
+                        </div>
+                        
+                        <div class="recommendation">
+                            <h4><i class="fas fa-lightbulb"></i> Recommendation</h4>
+                            <p id="recommendation-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-info-circle"></i> Note: This analysis is for informational purposes only and not a substitute for professional medical advice. Always consult with a healthcare provider for dietary concerns.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea       = document.getElementById('upload-area');
+            const fileInput        = document.getElementById('file-input');
+            const imagePreview     = document.getElementById('image-preview');
+            const analyzeBtn       = document.getElementById('analyze-btn');
+            const resultPlaceholder= document.getElementById('result-placeholder');
+            const analysisResult   = document.getElementById('analysis-result');
+            const loadingIndicator = document.getElementById('loading');
+            const uploadBtn        = uploadArea.querySelector('.upload-btn');
+            const errorMessage     = document.getElementById('error-message');
+
+            // **UPDATED** – point at your Vercel function, including `/api/analyze`
+            const API_ENDPOINT = 'https://<YOUR_VERCEL_APP>.vercel.app/api/analyze';
+
+            // click to open file dialog
+            uploadArea.addEventListener('click', e => {
+                if (e.target !== fileInput) fileInput.click();
+            });
+            uploadBtn.addEventListener('click', e => {
+                e.stopPropagation(); fileInput.click();
+            });
+
+            // file selected
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (!file || !file.type.match('image.*')) {
+                    return showError('Please select a valid image file.');
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    return showError('File size exceeds 5MB.');
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    analyzeBtn.disabled = false;
+                    hideError();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // drag & drop
+            uploadArea.addEventListener('dragover', e => {
+                e.preventDefault(); uploadArea.classList.add('dragover');
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            uploadArea.addEventListener('drop', e => {
+                e.preventDefault(); uploadArea.classList.remove('dragover');
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+            });
+
+            // analyze
+            analyzeBtn.addEventListener('click', async () => {
+                try {
+                    hideError();
+                    loadingIndicator.style.display = 'block';
+                    analyzeBtn.disabled = true;
+
+                    const file = fileInput.files[0];
+                    const base64Data = await toBase64(file);
+                    const base64Content = base64Data.split(',')[1];
+
+                    const resp = await fetch(API_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageBase64: base64Content, detail: "low" })
+                    });
+
+                    const contentType = resp.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        const text = await resp.text();
+                        throw new Error(`Server returned: ${text.substr(0,100)}`);
+                    }
+                    if (!resp.ok) {
+                        const err = await resp.json();
+                        throw new Error(err.error || 'Analysis failed');
+                    }
+
+                    const analysis = await resp.json();
+                    updateAnalysisUI(analysis);
+                    resultPlaceholder.style.display = 'none';
+                    analysisResult.style.display = 'block';
+                } catch (err) {
+                    console.error(err);
+                    showError(`Analysis failed: ${err.message}`);
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    analyzeBtn.disabled = false;
+                }
+            });
+
+            async function toBase64(file) {
+                return new Promise((res, rej) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => res(reader.result);
+                    reader.onerror = e => rej(e);
+                });
+            }
+
+            function updateAnalysisUI(analysis) {
+                const statusIcon = document.getElementById('status-icon');
+                statusIcon.innerHTML = '';
+                statusIcon.classList.remove('status-healthy','status-caution','status-harmful');
+
+                if (analysis.status.includes('Healthy')) {
+                    statusIcon.classList.add('status-healthy');
+                    statusIcon.innerHTML = '<i class="fas fa-check"></i>';
+                } else if (analysis.status.includes('Caution')) {
+                    statusIcon.classList.add('status-caution');
+                    statusIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
+                } else {
+                    statusIcon.classList.add('status-harmful');
+                    statusIcon.innerHTML = '<i class="fas fa-times"></i>';
+                }
+
+                document.getElementById('status-title').textContent       = analysis.status;
+                document.getElementById('status-description').textContent = analysis.summary;
+                document.getElementById('summary-text').textContent       = analysis.summary;
+
+                const list = document.getElementById('ingredients-list');
+                list.innerHTML = '';
+                analysis.keyIngredients.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${item.name}:</strong> ${item.analysis}`;
+                    list.appendChild(li);
+                });
+
+                document.getElementById('concerns-text').textContent       = analysis.concerns;
+                document.getElementById('recommendation-text').textContent = analysis.recommendation;
+            }
+
+            function showError(msg) {
+                errorMessage.textContent = msg;
+                errorMessage.style.display = 'block';
+            }
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
